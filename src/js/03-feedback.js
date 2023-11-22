@@ -1,44 +1,38 @@
 import throttle from 'lodash.throttle';
 
-const formData = {};
-
+const form = document.querySelector('.feedback-form');
 const LOCAL_KEY = 'feedback-form-state';
 
-const refs = {
-  form: document.querySelector('.feedback-form'),
-  input: document.querySelector('.feedback-form input'),
-  textarea: document.querySelector('.feedback-form textarea'),
-};
+form.addEventListener('submit', onFormSubmit);
+form.addEventListener('input', throttle(onInputData, 500));
 
-refs.form.addEventListener('submit', onFormSubmit);
-refs.form.addEventListener('input', throttle(onTextAreaInput, 1000));
+let dataForm = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {};
+const { email, message } = form.elements;
+reload();
 
+function onInputData(evt) {
+  dataForm = { email: email.value, message: message.value };
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(dataForm));
+}
 
+function reload() {
+  if (dataForm) {
+    email.value = dataForm.email || '';
+    message.value = dataForm.message || '';
+  }
+}
 
 function onFormSubmit(evt) {
   evt.preventDefault();
-
-  evt.currentTarget.reset();
-
+  console.log(dataForm);
+if (email.value === '' || message.value === '') {
+  return alert("Будь ласка, заповніть обов'язкові поля");
+}
   localStorage.removeItem(LOCAL_KEY);
-
-  
-  console.log(formData);
+  evt.currentTarget.reset();
+  dataForm = {};
 }
 
-function onTextAreaInput(evt) {
-  formData[evt.target.name] = evt.target.value;
 
-  localStorage.setItem(LOCAL_KEY, JSON.stringify(formData));
-}
 
-function populateTextArea() {
-  if (localStorage.getItem(LOCAL_KEY)) {
-    const formData = JSON.parse(localStorage.getItem(LOCAL_KEY));
 
-    for (let key in formData) {
-      refs.form.elements[key].value = formData[key];
-    }
-  }
-}
-populateTextArea();
