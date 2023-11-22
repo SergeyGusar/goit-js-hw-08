@@ -24,15 +24,16 @@ function reload() {
 
 function onFormSubmit(evt) {
   evt.preventDefault();
-  console.log(dataForm);
+  
 if (email.value === '' || message.value === '') {
   return alert("Будь ласка, заповніть обов'язкові поля");
 }
   localStorage.removeItem(LOCAL_KEY);
   evt.currentTarget.reset();
+  
   dataForm = {};
 }
-
+console.log(dataForm);
 
 
 
